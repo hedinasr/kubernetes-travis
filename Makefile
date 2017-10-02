@@ -1,2 +1,2 @@
 integration-tests:
-	./scripts/integration-tests minikube
+	./scripts/integration-tests dind
