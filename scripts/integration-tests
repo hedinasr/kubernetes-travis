@@ -23,27 +23,33 @@ export TEST_CONTEXT=${1:?}
 
 # __main__ () {
 . scripts/cluster_common.bash
+. scripts/libtest.bash
 
 # Create the 'minikube' or 'dind' cluster
 create_k8s_cluster ${TEST_CONTEXT}
 
-# Just exercising some kubectl-s
-KUBECTL_BIN=$(which kubectl)
-kubectl() {
-    ${KUBECTL_BIN:?} --context=${TEST_CONTEXT} "${@}"
-}
+# Deploy our stack
+bats tests/deploy-stack.bats
 
-(set -xe
-kubectl get nodes
-kubectl version
-kubectl api-versions
-kubectl create deployment nginx --image=nginx
-kubectl expose deployment nginx --port=80 --target-port=80
-# We neither like to sleep :), see master branch
-sleep 10
-kubectl get pod,rs,deployments,svc,configmaps --all-namespaces
-)
+# Set env vars for our test suite
+# INGRESS_IP: depend on the deployed cluster (dind or minikube)
+INGRESS_IP=$(get_ingress_ip ${TEST_CONTEXT})
+# URL_PATH: Dynamically find it from 1st ingress rule
+URL_PATH=$(kubectl get ing -ojsonpath='{.items[0].spec.rules[0].http.paths[0].path}')
+# Verify no empty vars:
+: ${INGRESS_IP:?} ${URL_PATH:?}
+
+# With the stack ready, now run the tests thru bats:
+export SVC_URL="http://my-nginx.default.svc${URL_PATH:?}"
+export ING_URL="${INGRESS_IP:?}${URL_PATH:?}"
+bats tests/integration-tests.bats
 exit_code=$?
+
+# Just FYI stats:
+echo "INFO: requests per seconds:"
+echo "* ingress: $(kubectl logs ab-ing |egrep ^Req)"
+echo "* service: $(kubectl logs ab-svc |egrep ^Req)"
+
 [[ ${exit_code} == 0 ]] && echo "TESTS: PASS" || echo "TESTS: FAIL"
 exit ${exit_code}
 # }

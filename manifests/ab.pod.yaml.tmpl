@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: NAME
+  name: NAME
+spec:
+  containers:
+  - args:
+    - -n1000
+    - -c100
+    - TARGET
+    image: devth/alpine-bench
+    name: ab
+  restartPolicy: Never

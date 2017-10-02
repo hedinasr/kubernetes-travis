@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+data:
+  index.html: |-
+    The answer is 42
+metadata:
+  name: my-nginx-content
+  namespace: default
