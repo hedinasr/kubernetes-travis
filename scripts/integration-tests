@@ -39,11 +39,11 @@ kubectl version
 kubectl api-versions
 #kubectl create deployment nginx --image=nginx
 #kubectl expose deployment nginx --port=80 --target-port=80
-kubectl create -f ../registry/registry.configmap.yaml 
-kubectl create -f ../registry/registry.deploy.yaml
-kubectl create -f ../registry/registry.ds.yaml
-kubectl create -f ../registry/registry.pvc.yaml
-kubectl create -f ../registry/registry.svc.yaml
+kubectl create -f registry/registry.configmap.yaml 
+kubectl create -f registry/registry.deploy.yaml
+kubectl create -f registry/registry.ds.yaml
+kubectl create -f registry/registry.pvc.yaml
+kubectl create -f registry/registry.svc.yaml
 # We neither like to sleep :), see master branch
 sleep 10
 kubectl get pod,rs,deployments,svc,configmaps --all-namespaces
