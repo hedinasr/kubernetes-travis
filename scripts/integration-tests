@@ -37,8 +37,8 @@ kubectl() {
 kubectl get nodes
 kubectl version
 kubectl api-versions
-kubectl create deployment nginx --image=nginx
-kubectl expose deployment nginx --port=80 --target-port=80
+#kubectl create deployment nginx --image=nginx
+#kubectl expose deployment nginx --port=80 --target-port=80
 kubectl create -f ../registry/registry.configmap.yaml 
 kubectl create -f ../registry/registry.deploy.yaml
 kubectl create -f ../registry/registry.ds.yaml
